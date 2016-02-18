@@ -10,11 +10,10 @@ if (empty($options)) {
 }
 $options = array_merge($defaultOptions, $options);
 
-// Get title from the entity
+// Get title from controller
 if (empty($options['title'])) {
     $options['title'] = __('Add {0}', Inflector::singularize(Inflector::humanize($this->request->controller, '-')));
 }
-
 ?>
 
 <div class="row">
@@ -43,15 +42,15 @@ if (empty($options['title'])) {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($records as $records): ?>
+                <?php foreach ($options['entities'] as $entity): ?>
                 <tr>
                     <?php foreach ($fields as $field): ?>
-                        <td><?= h($records->$field[0]) ?></td>
+                        <td><?= h($entity->$field[0]) ?></td>
                     <?php endforeach; ?>
                     <td class="actions">
-                        <?= $this->Html->link('', ['action' => 'view', $records->id], ['title' => __('View'), 'class' => 'btn btn-default glyphicon glyphicon-eye-open']) ?>
-                        <?= $this->Html->link('', ['action' => 'edit', $records->id], ['title' => __('Edit'), 'class' => 'btn btn-default glyphicon glyphicon-pencil']) ?>
-                        <?= $this->Form->postLink('', ['action' => 'delete', $records->id], ['confirm' => __('Are you sure you want to delete # {0}?', $records->id), 'title' => __('Delete'), 'class' => 'btn btn-default glyphicon glyphicon-trash']) ?>
+                        <?= $this->Html->link('', ['action' => 'view', $entity->id], ['title' => __('View'), 'class' => 'btn btn-default glyphicon glyphicon-eye-open']) ?>
+                        <?= $this->Html->link('', ['action' => 'edit', $entity->id], ['title' => __('Edit'), 'class' => 'btn btn-default glyphicon glyphicon-pencil']) ?>
+                        <?= $this->Form->postLink('', ['action' => 'delete', $entity->id], ['confirm' => __('Are you sure you want to delete # {0}?', $entity->id), 'title' => __('Delete'), 'class' => 'btn btn-default glyphicon glyphicon-trash']) ?>
                     </td>
                 </tr>
                 <?php endforeach; ?>
