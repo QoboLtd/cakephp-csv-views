@@ -13,13 +13,13 @@ $options = array_merge($defaultOptions, $options);
 
 // Get title from the entity
 if (empty($options['title'])) {
-    $options['title'] = __('Add {0}', Inflector::singularize(Inflector::humanize($this->request->controller, '_')));
+    $options['title'] = __('Edit {0}', Inflector::singularize(Inflector::humanize($this->request->controller, '_')));
 }
 ?>
 
 <div class="row">
     <div class="col-xs-12">
-        <?= $this->Form->create($options['entity']) ?>
+        <?= $this->Form->create($options['entity']); ?>
         <fieldset>
             <legend><?= $options['title'] ?></legend>
             <?php
