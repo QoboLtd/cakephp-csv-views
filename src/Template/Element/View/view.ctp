@@ -40,7 +40,7 @@ if (empty($options['title'])) {
         <div class="panel panel-default">
             <!-- Panel header -->
             <div class="panel-heading">
-                <h3 class="panel-title"><?= $options['title'] ?></h3>
+                <h3 class="panel-title"><strong><?= $options['title'] ?></strong></h3>
             </div>
             <table class="table table-striped" cellpadding="0" cellspacing="0">
                 <?php

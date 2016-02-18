@@ -7,15 +7,13 @@ $defaultOptions = [
     'fields' => [],
 ];
 if (empty($options)) {
-    $options = array();
+    $options = [];
 }
 $options = array_merge($defaultOptions, $options);
 
 // Get title from the entity
 if (empty($options['title'])) {
-    $className = explode('\\', get_class($options['entity']));
-    $entityClass = array_pop($className);
-    $options['title'] = __('Add {0}', Inflector::humanize(Inflector::underscore($entityClass)));
+    $options['title'] = __('Add {0}', Inflector::singularize(Inflector::humanize($this->request->controller, '_')));
 }
 ?>
 
