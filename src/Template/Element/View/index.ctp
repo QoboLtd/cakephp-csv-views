@@ -45,7 +45,13 @@ if (empty($options['title'])) {
                 <?php foreach ($options['entities'] as $entity): ?>
                 <tr>
                     <?php foreach ($fields as $field): ?>
-                        <td><?= h($entity->$field[0]) ?></td>
+                        <td><?php
+                            if (is_bool($entity->$field[0])) {
+                                echo h($entity->$field[0] ? __('Yes') : __('No'));
+                            } else {
+                                echo h($entity->$field[0]);
+                            }
+                        ?></td>
                     <?php endforeach; ?>
                     <td class="actions">
                         <?= $this->Html->link('', ['action' => 'view', $entity->id], ['title' => __('View'), 'class' => 'btn btn-default glyphicon glyphicon-eye-open']) ?>
