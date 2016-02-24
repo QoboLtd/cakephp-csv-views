@@ -27,12 +27,16 @@ if (empty($options['title'])) {
             <legend><?= $options['title'] ?></legend>
             <?php
                 if (!empty($options['fields'])) {
-                    foreach ($options['fields'] as $fields) {
-                        if (!empty($fields)) {
-                            $width = 12 / count($fields);
+                    foreach ($options['fields'] as $panelName => $panelFields) {
+                        echo '<div class="panel panel-default">';
+                        echo '<div class="panel-heading">';
+                        echo '<h3 class="panel-title"><strong>' . Inflector::humanize($panelName) . '</strong></h3>';
+                        echo '</div>';
+                        echo '<div class="panel-body">';
+                        foreach ($panelFields as $subFields) {
                             echo '<div class="row">';
-                            foreach ($fields as $field) {
-                                echo '<div class="col-xs-' . $width . '">';
+                            foreach ($subFields as $field) {
+                                echo '<div class="col-xs-6">';
                                 if ('' !== trim($field)) {
                                     echo $this->Form->input($field);
                                 } else {
@@ -42,6 +46,8 @@ if (empty($options['title'])) {
                             }
                             echo '</div>';
                         }
+                        echo '</div>';
+                        echo '</div>';
                     }
                 }
             ?>
