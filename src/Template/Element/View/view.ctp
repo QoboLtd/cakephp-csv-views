@@ -37,41 +37,41 @@ if (empty($options['title'])) {
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="panel panel-default">
-            <!-- Panel header -->
-            <div class="panel-heading">
-                <h3 class="panel-title"><strong><?= $options['title'] ?></strong></h3>
-            </div>
-            <table class="table table-striped" cellpadding="0" cellspacing="0">
-                <?php
-                    if (!empty($options['fields'])) {
-                        foreach ($options['fields'] as $fields) {
-                            if (!empty($fields)) {
-                                echo '<tr>';
-                                foreach ($fields as $field) {
-                                    if ('' !== trim($field)) {
-                                        echo '<td class="text-right"><strong>';
-                                        echo __(Inflector::humanize($field)) . ':';
-                                        echo '</strong></td>';
-                                        echo '<td>';
-                                        if (is_bool($options['entity']->$field)) {
-                                            echo $options['entity']->$field ? __('Yes') : __('No');
-                                        } else {
-                                            echo h($options['entity']->$field);
-                                        }
-                                        echo '</td>';
-                                    } else {
-                                        echo '<td>&nbsp;</td>';
-                                        echo '<td>&nbsp;</td>';
-                                    }
+        <h3><strong><?= $options['title'] ?></strong></h3>
+        <?php
+            if (!empty($options['fields'])) {
+                foreach ($options['fields'] as $panelName => $panelFields) {
+                    echo '<div class="panel panel-default">';
+                    echo '<div class="panel-heading">';
+                    echo '<h3 class="panel-title"><strong>' . Inflector::humanize($panelName) . '</strong></h3>';
+                    echo '</div>';
+                    echo '<table class="table table-striped" cellpadding="0" cellspacing="0">';
+                    foreach ($panelFields as $subFields) {
+                        echo '<tr>';
+                        foreach ($subFields as $field) {
+                            if ('' !== trim($field)) {
+                                echo '<td class="text-right"><strong>';
+                                echo __(Inflector::humanize($field)) . ':';
+                                echo '</strong></td>';
+                                echo '<td>';
+                                if (is_bool($options['entity']->$field)) {
+                                    echo $options['entity']->$field ? __('Yes') : __('No');
+                                } else {
+                                    echo h($options['entity']->$field);
                                 }
-                                echo '</tr>';
+                                echo '</td>';
+                            } else {
+                                echo '<td>&nbsp;</td>';
+                                echo '<td>&nbsp;</td>';
                             }
                         }
+                        echo '</tr>';
                     }
-                ?>
-            </table>
-        </div>
+                    echo '</table>';
+                    echo '</div>';
+                }
+            }
+        ?>
     </div>
 </div>
 
