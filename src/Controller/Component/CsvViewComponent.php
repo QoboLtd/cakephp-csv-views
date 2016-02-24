@@ -20,6 +20,19 @@ class CsvViewComponent extends Component
     protected $_defaultConfig = [];
 
     /**
+     * Count of fields per row for panel logic
+     */
+    const PANEL_COUNT = 3;
+
+    /**
+     * Error messages
+     * @var array
+     */
+    protected $_errorMessages = [
+        '_arrangePanels' => 'Field parameters count [%s] does not match required parameters count [%s]'
+    ];
+
+    /**
      * Called before the controller action. You can use this method to configure and customize components
      * or perform logic that needs to happen before each controller action.
      *
@@ -121,6 +134,7 @@ class CsvViewComponent extends Component
     /**
      * Method that arranges csv fetched fields into panels.
      * @param  array  $data fields
+     * @throws \RuntimeException when csv field parameters count does not match
      * @return array        fields arranged in panels
      */
     protected function _arrangePanels(array $data)
@@ -128,6 +142,13 @@ class CsvViewComponent extends Component
         $result = [];
 
         foreach ($data as $fields) {
+            $fieldCount = count($fields);
+            if (static::PANEL_COUNT !== $fieldCount) {
+                throw new \RuntimeException(
+                    sprintf($this->_errorMessages[__FUNCTION__], $fieldCount, static::PANEL_COUNT)
+                );
+
+            }
             $panel = array_pop($fields);
             $result[$panel][] = $fields;
         }
