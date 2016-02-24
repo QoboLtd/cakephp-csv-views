@@ -3,6 +3,7 @@ namespace CsvViews\Controller\Component;
 
 use Cake\Controller\Component;
 use Cake\Controller\ComponentRegistry;
+use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 
 /**
@@ -31,11 +32,13 @@ class CsvViewComponent extends Component
         if ('view' === $this->request->params['action']) {
             $this->_setAssociatedRecords($event, ['oneToMany']);
         }
+
+        $this->_setTableFields($event);
     }
 
     /**
      * Method that retrieves specified Table's associated records and passes them to the View.
-     * @param \Cake\Event\Event $event     Event object
+     * @param \Cake\Event\Event $event     An Event instance
      * @param array             $types     association type(s)
      * @param string            $tableName Table name to fetch associated records from
      * @return void
@@ -63,13 +66,33 @@ class CsvViewComponent extends Component
     }
 
     /**
+     * Method that passes csv defined Table fields to the View
+     * @param \Cake\Event\Event $event An Event instance
+     * @return void
+     */
+    protected function _setTableFields(\Cake\Event\Event $event)
+    {
+        $controller = $event->subject();
+        $path = Configure::readOrFail('CsvViews.path');
+        $result = $this->_getFieldsFromCsv(
+            $path . $this->request->controller . DS . $this->request->params['action'] . '.csv'
+        );
+
+        $controller->set('fields', $result);
+        $controller->set('_serialize', ['fields']);
+    }
+
+    /**
      * Method that gets fields from a csv file
      * @param  string $path csv file path
      * @return array        csv data
      */
-    public function getFields($path)
+    protected function _getFieldsFromCsv($path)
     {
-        $result = $this->_getCsvData($path);
+        $result = [];
+        if (file_exists($path)) {
+            $result = $this->_getCsvData($path);
+        }
 
         return $result;
     }
