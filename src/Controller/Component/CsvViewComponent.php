@@ -92,6 +92,7 @@ class CsvViewComponent extends Component
         $result = [];
         if (file_exists($path)) {
             $result = $this->_getCsvData($path);
+            $result = $this->_arrangePanels($result);
         }
 
         return $result;
@@ -112,6 +113,23 @@ class CsvViewComponent extends Component
                 }
                 fclose($handle);
             }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Method that arranges csv fetched fields into panels.
+     * @param  array  $data fields
+     * @return array        fields arranged in panels
+     */
+    protected function _arrangePanels(array $data)
+    {
+        $result = [];
+
+        foreach ($data as $fields) {
+            $panel = array_pop($fields);
+            $result[$panel][] = $fields;
         }
 
         return $result;
