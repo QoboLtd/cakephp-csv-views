@@ -33,7 +33,6 @@ if (empty($options['title'])) {
                         echo '<h3 class="panel-title"><strong>' . Inflector::humanize($panelName) . '</strong></h3>';
                         echo '</div>';
                         echo '<div class="panel-body">';
-                        // $width = 12 / count($fields);
                         foreach ($panelFields as $subFields) {
                             echo '<div class="row">';
                             foreach ($subFields as $field) {
