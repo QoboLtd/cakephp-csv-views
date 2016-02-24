@@ -13,7 +13,10 @@ $options = array_merge($defaultOptions, $options);
 
 // Get title from the entity
 if (empty($options['title'])) {
-    $options['title'] = __('Add {0}', Inflector::singularize(Inflector::humanize($this->request->controller, '_')));
+    $options['title'] = __(
+        'Add {0}',
+        Inflector::singularize(Inflector::humanize(Inflector::underscore($this->request->controller)))
+    );
 }
 ?>
 
