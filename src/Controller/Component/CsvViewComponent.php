@@ -3,6 +3,7 @@ namespace CsvViews\Controller\Component;
 
 use Cake\Controller\Component;
 use Cake\Controller\ComponentRegistry;
+use Cake\ORM\TableRegistry;
 
 /**
  * CsvView component
@@ -16,6 +17,50 @@ class CsvViewComponent extends Component
      * @var array
      */
     protected $_defaultConfig = [];
+
+    /**
+     * Called before the controller action. You can use this method to configure and customize components
+     * or perform logic that needs to happen before each controller action.
+     *
+     * @param \Cake\Event\Event $event An Event instance
+     * @return void
+     * @link http://book.cakephp.org/3.0/en/controllers.html#request-life-cycle-callbacks
+     */
+    public function beforeFilter(\Cake\Event\Event $event)
+    {
+        if ('view' === $this->request->params['action']) {
+            $this->_setAssociatedRecords($event, ['oneToMany']);
+        }
+    }
+
+    /**
+     * Method that retrieves specified Table's associated records and passes them to the View.
+     * @param \Cake\Event\Event $event     Event object
+     * @param array             $types     association type(s)
+     * @param string            $tableName Table name to fetch associated records from
+     * @return void
+     */
+    protected function _setAssociatedRecords(\Cake\Event\Event $event, array $types, $tableName = '')
+    {
+        $controller = $event->subject();
+        // if not provided, get Table name from current controller
+        if ('' === trim($tableName)) {
+            $tableName = $controller->name;
+        }
+
+        $result = [];
+        $table = TableRegistry::get($tableName);
+        foreach ($table->associations() as $association) {
+            if (in_array($association->type(), $types)) {
+                $assocName = $association->name();
+                $query = $table->{$assocName}->find('all');
+                $result[$assocName] = $query->all();
+            }
+        }
+
+        $controller->set('associated', $result);
+        $controller->set('_serialize', ['associated']);
+    }
 
     /**
      * Method that gets fields from a csv file
