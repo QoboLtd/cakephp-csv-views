@@ -97,29 +97,28 @@ if (!empty($csvAssociatedRecords)) : ?>
         <div class="tab-content">
 <?php
     $active = 'active';
-    $assocFields = ['id', 'name'];
-    foreach ($csvAssociatedRecords as $tabName => $records) {
+    foreach ($csvAssociatedRecords as $tabName => $assocData) {
     ?>
             <div role="tabpanel" class="tab-pane <?= $active; ?>" id="<?= $tabName; ?>">
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                        <?php foreach ($assocFields as $assocField) : ?>
-                            <th><?= $this->Paginator->sort($assocField); ?></th>
+                        <?php foreach ($assocData['fields'] as $assocField) : ?>
+                            <th><?= $this->Paginator->sort($assocField[0]); ?></th>
                         <?php endforeach; ?>
                         </tr>
                     </thead>
                     <tbody>
-                    <?php foreach ($records as $record) : ?>
+                    <?php foreach ($assocData['records'] as $record) : ?>
                         <tr>
-                        <?php foreach ($assocFields as $assocField) : ?>
-                            <?php if ('' !== trim($record->$assocField)) : ?>
+                        <?php foreach ($assocData['fields'] as $assocField) : ?>
+                            <?php if ('' !== trim($record->$assocField[0])) : ?>
                             <td>
                             <?php
-                                if (is_bool($record->$assocField)) {
-                                    echo $record->$assocField ? __('Yes') : __('No');
+                                if (is_bool($record->$assocField[0])) {
+                                    echo $record->$assocField[0] ? __('Yes') : __('No');
                                 } else {
-                                    echo h($record->$assocField);
+                                    echo h($record->$assocField[0]);
                                 }
                             ?>
                             </td>
