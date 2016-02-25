@@ -51,7 +51,7 @@ if (empty($options['title'])) {
                         foreach ($subFields as $field) {
                             if ('' !== trim($field)) {
                                 echo '<td class="col-xs-3 text-right"><strong>';
-                                echo __(Inflector::humanize($field)) . ':';
+                                echo Inflector::humanize($field) . ':';
                                 echo '</strong></td>';
                                 echo '<td class="col-xs-3">';
                                 if (is_bool($options['entity']->$field)) {
@@ -79,6 +79,7 @@ if (empty($options['title'])) {
 if (!empty($csvAssociatedRecords)) : ?>
 <div class="row">
     <div class="col-xs-12">
+        <h3><?= __('Associated Records'); ?></h3>
         <ul id="relatedTabs" class="nav nav-tabs" role="tablist">
 <?php
     $active = 'active';
