@@ -106,15 +106,19 @@ class CsvViewComponent extends Component
 
     /**
      * Method that gets fields from a csv file
-     * @param  string $path csv file path
-     * @return array        csv data
+     * @param  string $path   csv file path
+     * @param  string $action action name
+     * @return array          csv data
      */
-    protected function _getFieldsFromCsv($path)
+    protected function _getFieldsFromCsv($path, $action = '')
     {
+        if ('' === trim($action)) {
+            $action = $this->request->params['action'];
+        }
         $result = [];
         if (file_exists($path)) {
             $result = $this->_getCsvData($path);
-            if (in_array($this->request->params['action'], static::PANEL_ACTIONS)) {
+            if (in_array($action, static::PANEL_ACTIONS)) {
                 $result = $this->_arrangePanels($result);
             }
         }
