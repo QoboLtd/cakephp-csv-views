@@ -82,10 +82,10 @@ if (!empty($csvAssociatedRecords)) : ?>
         <ul id="relatedTabs" class="nav nav-tabs" role="tablist">
 <?php
     $active = 'active';
-    foreach ($csvAssociatedRecords as $assocData) :
+    foreach ($csvAssociatedRecords as $tabName => $assocData) :
 ?>
             <li role="presentation" class="<?= $active; ?>">
-                <a href="#<?= $assocData['table_name']; ?>" aria-controls="<?= $assocData['table_name']; ?>" role="tab" data-toggle="tab">
+                <a href="#<?= $tabName; ?>" aria-controls="<?= $tabName; ?>" role="tab" data-toggle="tab">
                     <?= Inflector::humanize($assocData['table_name']); ?>
                 </a>
             </li>
