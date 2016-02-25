@@ -5,6 +5,7 @@ use Cake\Controller\Component;
 use Cake\Controller\ComponentRegistry;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Inflector;
 
 /**
  * CsvView component
@@ -51,7 +52,8 @@ class CsvViewComponent extends Component
             $this->_setAssociatedRecords($event, ['oneToMany']);
         }
 
-        $this->_setTableFields($event);
+        $path = Configure::readOrFail('CsvViews.path');
+        $this->_setTableFields($event, $path);
     }
 
     /**
@@ -73,28 +75,38 @@ class CsvViewComponent extends Component
         $table = TableRegistry::get($tableName);
         foreach ($table->associations() as $association) {
             if (in_array($association->type(), $types)) {
+                // get associated records
                 $assocName = $association->name();
                 $query = $table->{$assocName}->find('all');
-                $result[$assocName] = $query->all();
+                $result[$assocName]['records'] = $query->all();
+
+                // get associated index View csv fields
+                $action = 'index';
+                $path = Configure::readOrFail('CsvViews.path');
+                $path .= Inflector::camelize($association->table()) . DS . $action . '.csv';
+                $result[$assocName]['fields'] = $this->_getFieldsFromCsv($path, $action);
             }
         }
 
-        $controller->set('associated', $result);
-        $controller->set('_serialize', ['associated']);
+        $controller->set('csvAssociatedRecords', $result);
+        $controller->set('_serialize', ['csvAssociatedRecords']);
     }
 
     /**
      * Method that passes csv defined Table fields to the View
      * @param \Cake\Event\Event $event An Event instance
+     * @param  string           $path  file path
      * @return void
      */
-    protected function _setTableFields(\Cake\Event\Event $event)
+    protected function _setTableFields(\Cake\Event\Event $event, $path)
     {
-        $controller = $event->subject();
-        $path = Configure::readOrFail('CsvViews.path');
-        $result = $this->_getFieldsFromCsv(
-            $path . $this->request->controller . DS . $this->request->params['action'] . '.csv'
-        );
+        $result = [];
+        if (file_exists($path)) {
+            $controller = $event->subject();
+            $result = $this->_getFieldsFromCsv(
+                $path . $this->request->controller . DS . $this->request->params['action'] . '.csv'
+            );
+        }
 
         $controller->set('fields', $result);
         $controller->set('_serialize', ['fields']);
@@ -102,15 +114,19 @@ class CsvViewComponent extends Component
 
     /**
      * Method that gets fields from a csv file
-     * @param  string $path csv file path
-     * @return array        csv data
+     * @param  string $path   csv file path
+     * @param  string $action action name
+     * @return array          csv data
      */
-    protected function _getFieldsFromCsv($path)
+    protected function _getFieldsFromCsv($path, $action = '')
     {
+        if ('' === trim($action)) {
+            $action = $this->request->params['action'];
+        }
         $result = [];
         if (file_exists($path)) {
             $result = $this->_getCsvData($path);
-            if (in_array($this->request->params['action'], static::PANEL_ACTIONS)) {
+            if (in_array($action, static::PANEL_ACTIONS)) {
                 $result = $this->_arrangePanels($result);
             }
         }
