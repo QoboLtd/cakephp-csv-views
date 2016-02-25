@@ -45,15 +45,15 @@ if (empty($options['title'])) {
                     echo '<div class="panel-heading">';
                     echo '<h3 class="panel-title"><strong>' . Inflector::humanize($panelName) . '</strong></h3>';
                     echo '</div>';
-                    echo '<table class="table table-striped" cellpadding="0" cellspacing="0">';
+                    echo '<table class="table table-hover">';
                     foreach ($panelFields as $subFields) {
                         echo '<tr>';
                         foreach ($subFields as $field) {
                             if ('' !== trim($field)) {
-                                echo '<td class="text-right"><strong>';
+                                echo '<td class="col-xs-3 text-right"><strong>';
                                 echo __(Inflector::humanize($field)) . ':';
                                 echo '</strong></td>';
-                                echo '<td>';
+                                echo '<td class="col-xs-3">';
                                 if (is_bool($options['entity']->$field)) {
                                     echo $options['entity']->$field ? __('Yes') : __('No');
                                 } else {
@@ -61,8 +61,8 @@ if (empty($options['title'])) {
                                 }
                                 echo '</td>';
                             } else {
-                                echo '<td>&nbsp;</td>';
-                                echo '<td>&nbsp;</td>';
+                                echo '<td class="col-xs-3">&nbsp;</td>';
+                                echo '<td class="col-xs-3">&nbsp;</td>';
                             }
                         }
                         echo '</tr>';
