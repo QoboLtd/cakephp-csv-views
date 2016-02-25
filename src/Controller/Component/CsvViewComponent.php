@@ -75,16 +75,21 @@ class CsvViewComponent extends Component
         $table = TableRegistry::get($tableName);
         foreach ($table->associations() as $association) {
             if (in_array($association->type(), $types)) {
-                // get associated records
                 $assocName = $association->name();
+                $tableName = $association->table();
+
+                // get associated records
                 $query = $table->{$assocName}->find('all');
                 $result[$assocName]['records'] = $query->all();
 
                 // get associated index View csv fields
                 $action = 'index';
                 $path = Configure::readOrFail('CsvViews.path');
-                $path .= Inflector::camelize($association->table()) . DS . $action . '.csv';
+                $path .= Inflector::camelize($tableName) . DS . $action . '.csv';
                 $result[$assocName]['fields'] = $this->_getFieldsFromCsv($path, $action);
+
+                // get associated table name
+                $result[$assocName]['table_name'] = $tableName;
             }
         }
 

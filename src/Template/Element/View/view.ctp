@@ -51,7 +51,7 @@ if (empty($options['title'])) {
                         foreach ($subFields as $field) {
                             if ('' !== trim($field)) {
                                 echo '<td class="col-xs-3 text-right"><strong>';
-                                echo __(Inflector::humanize($field)) . ':';
+                                echo Inflector::humanize($field) . ':';
                                 echo '</strong></td>';
                                 echo '<td class="col-xs-3">';
                                 if (is_bool($options['entity']->$field)) {
@@ -79,14 +79,15 @@ if (empty($options['title'])) {
 if (!empty($csvAssociatedRecords)) : ?>
 <div class="row">
     <div class="col-xs-12">
+        <h3><?= __('Associated Records'); ?></h3>
         <ul id="relatedTabs" class="nav nav-tabs" role="tablist">
 <?php
     $active = 'active';
-    foreach (array_keys($csvAssociatedRecords) as $tabName) :
+    foreach ($csvAssociatedRecords as $tabName => $assocData) :
 ?>
             <li role="presentation" class="<?= $active; ?>">
                 <a href="#<?= $tabName; ?>" aria-controls="<?= $tabName; ?>" role="tab" data-toggle="tab">
-                    <?= $tabName; ?>
+                    <?= Inflector::humanize($assocData['table_name']); ?>
                 </a>
             </li>
 <?php
@@ -118,7 +119,17 @@ if (!empty($csvAssociatedRecords)) : ?>
                                 if (is_bool($record->$assocField[0])) {
                                     echo $record->$assocField[0] ? __('Yes') : __('No');
                                 } else {
-                                    echo h($record->$assocField[0]);
+                                    if ('id' === $assocField[0]) {
+                                        echo $this->Html->link(
+                                            h($record->$assocField[0]), [
+                                                'controller' => $assocData['table_name'],
+                                                'action' => 'view',
+                                                $record->$assocField[0]
+                                            ]
+                                        );
+                                    } else {
+                                        echo h($record->$assocField[0]);
+                                    }
                                 }
                             ?>
                             </td>
