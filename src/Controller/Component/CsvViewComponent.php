@@ -51,7 +51,8 @@ class CsvViewComponent extends Component
             $this->_setAssociatedRecords($event, ['oneToMany']);
         }
 
-        $this->_setTableFields($event);
+        $path = Configure::readOrFail('CsvViews.path');
+        $this->_setTableFields($event, $path);
     }
 
     /**
@@ -86,15 +87,18 @@ class CsvViewComponent extends Component
     /**
      * Method that passes csv defined Table fields to the View
      * @param \Cake\Event\Event $event An Event instance
+     * @param  string           $path  file path
      * @return void
      */
-    protected function _setTableFields(\Cake\Event\Event $event)
+    protected function _setTableFields(\Cake\Event\Event $event, $path)
     {
-        $controller = $event->subject();
-        $path = Configure::readOrFail('CsvViews.path');
-        $result = $this->_getFieldsFromCsv(
-            $path . $this->request->controller . DS . $this->request->params['action'] . '.csv'
-        );
+        $result = [];
+        if (file_exists($path)) {
+            $controller = $event->subject();
+            $result = $this->_getFieldsFromCsv(
+                $path . $this->request->controller . DS . $this->request->params['action'] . '.csv'
+            );
+        }
 
         $controller->set('fields', $result);
         $controller->set('_serialize', ['fields']);
