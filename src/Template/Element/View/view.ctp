@@ -119,7 +119,17 @@ if (!empty($csvAssociatedRecords)) : ?>
                                 if (is_bool($record->$assocField[0])) {
                                     echo $record->$assocField[0] ? __('Yes') : __('No');
                                 } else {
-                                    echo h($record->$assocField[0]);
+                                    if ('id' === $assocField[0]) {
+                                        echo $this->Html->link(
+                                            h($record->$assocField[0]), [
+                                                'controller' => $assocData['table_name'],
+                                                'action' => 'view',
+                                                $record->$assocField[0]
+                                            ]
+                                        );
+                                    } else {
+                                        echo h($record->$assocField[0]);
+                                    }
                                 }
                             ?>
                             </td>
