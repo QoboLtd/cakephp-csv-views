@@ -105,7 +105,7 @@ if (!empty($csvAssociatedRecords)) : ?>
                     <thead>
                         <tr>
                         <?php foreach ($assocData['fields'] as $assocField) : ?>
-                            <th><?= $this->Paginator->sort($assocField[0]); ?></th>
+                            <th><?= $this->Paginator->sort($assocField); ?></th>
                         <?php endforeach; ?>
                         </tr>
                     </thead>
@@ -113,22 +113,22 @@ if (!empty($csvAssociatedRecords)) : ?>
                     <?php foreach ($assocData['records'] as $record) : ?>
                         <tr>
                         <?php foreach ($assocData['fields'] as $assocField) : ?>
-                            <?php if ('' !== trim($record->$assocField[0])) : ?>
+                            <?php if ('' !== trim($record->$assocField)) : ?>
                             <td>
                             <?php
-                                if (is_bool($record->$assocField[0])) {
-                                    echo $record->$assocField[0] ? __('Yes') : __('No');
+                                if (is_bool($record->$assocField)) {
+                                    echo $record->$assocField ? __('Yes') : __('No');
                                 } else {
-                                    if ('id' === $assocField[0]) {
+                                    if ('id' === $assocField) {
                                         echo $this->Html->link(
-                                            h($record->$assocField[0]), [
+                                            h($record->$assocField), [
                                                 'controller' => $assocData['table_name'],
                                                 'action' => 'view',
-                                                $record->$assocField[0]
+                                                $record->$assocField
                                             ]
                                         );
                                     } else {
-                                        echo h($record->$assocField[0]);
+                                        echo h($record->$assocField);
                                     }
                                 }
                             ?>
