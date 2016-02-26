@@ -49,6 +49,7 @@ var typeahead = typeahead || {};
      * @param  {object} input        typeahead input
      * @param  {object} hidden_input hidden input, value holder
      * @return {void}
+     * {@link plugin: http://plugins.upbootstrap.com/bootstrap-ajax-typeahead/}
      */
     Typeahead.prototype._enable = function(input, hidden_input) {
         that = this;
