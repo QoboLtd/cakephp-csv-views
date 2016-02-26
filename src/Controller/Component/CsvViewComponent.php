@@ -28,7 +28,7 @@ class CsvViewComponent extends Component
     /**
      * Actions to arrange fields into panels
      */
-    const PANEL_ACTIONS = ['add', 'edit', 'view'];
+    protected $_panelActions = ['add', 'edit', 'view'];
 
     /**
      * Error messages
@@ -131,7 +131,7 @@ class CsvViewComponent extends Component
         $result = [];
         if (file_exists($path)) {
             $result = $this->_getCsvData($path);
-            if (in_array($action, static::PANEL_ACTIONS)) {
+            if (in_array($action, $this->_panelActions)) {
                 $result = $this->_arrangePanels($result);
             }
         }
