@@ -61,9 +61,15 @@ if (empty($options['title'])) {
                                         !empty($csvListsOptions) &&
                                         in_array($field, array_keys($csvListsOptions))
                                     ) {
+                                        $options = [];
+                                        foreach ($csvListsOptions[$field] as $k => $v) {
+                                            if ($v['active']) {
+                                                $options[$k] = $v['label'];
+                                            }
+                                        }
                                         echo '<div class="form-group">';
                                         echo $this->Form->label($field);
-                                        echo $this->Form->select($field, $csvListsOptions[$field], ['class' => 'form-control']);
+                                        echo $this->Form->select($field, $options, ['class' => 'form-control']);
                                         echo '</div>';
                                     } else {
                                         echo $this->Form->input($field);

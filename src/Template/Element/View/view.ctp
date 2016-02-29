@@ -54,10 +54,15 @@ if (empty($options['title'])) {
                                 echo Inflector::humanize($field) . ':';
                                 echo '</strong></td>';
                                 echo '<td class="col-xs-3">';
-                                if (is_bool($options['entity']->$field)) {
-                                    echo $options['entity']->$field ? __('Yes') : __('No');
+                                // list fields
+                                if (!empty($csvListsOptions) && in_array($field, array_keys($csvListsOptions))) {
+                                    echo h($csvListsOptions[$field][$options['entity']->$field]['label']);
                                 } else {
-                                    echo h($options['entity']->$field);
+                                    if (is_bool($options['entity']->$field)) {
+                                        echo $options['entity']->$field ? __('Yes') : __('No');
+                                    } else {
+                                        echo h($options['entity']->$field);
+                                    }
                                 }
                                 echo '</td>';
                             } else {
