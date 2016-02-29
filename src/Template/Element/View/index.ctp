@@ -49,11 +49,16 @@ if (empty($options['title'])) {
                 <tr>
                     <?php foreach ($fields as $field): ?>
                         <td><?php
+                        // list fields
+                        if (!empty($csvListsOptions) && in_array($field[0], array_keys($csvListsOptions))) {
+                            echo h($csvListsOptions[$field[0]][$entity->$field[0]]['label']);
+                        } else {
                             if (is_bool($entity->$field[0])) {
                                 echo h($entity->$field[0] ? __('Yes') : __('No'));
                             } else {
                                 echo h($entity->$field[0]);
                             }
+                        }
                         ?></td>
                     <?php endforeach; ?>
                     <td class="actions">
