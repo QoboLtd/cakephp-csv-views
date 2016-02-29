@@ -38,7 +38,26 @@ if (empty($options['title'])) {
                             foreach ($subFields as $field) {
                                 echo '<div class="col-xs-6">';
                                 if ('' !== trim($field)) {
+                                    // foreign key fields
                                     if (
+                                        !empty($csvForeignKeys) &&
+                                        in_array($field, array_keys($csvForeignKeys)) &&
+                                        ($csvForeignKeys[$field]->type() === 'manyToOne')
+                                    ) {
+                                        $association = $csvForeignKeys[$field];
+                                        // typeahead field
+                                        echo $this->Form->input($field, [
+                                            'name' => $field . '_label',
+                                            'id' => $field . '_label',
+                                            'type' => 'text',
+                                            'data-type' => 'typeahead',
+                                            'data-name' => $field,
+                                            'autocomplete' => 'off',
+                                            'data-url' => '/' . $association->table() . '/autocomplete.json'
+                                        ]);
+                                        // typeahead hidden field
+                                        echo $this->Form->input($field, ['type' => 'hidden']);
+                                    } elseif ( // list fields
                                         !empty($csvListsOptions) &&
                                         in_array($field, array_keys($csvListsOptions))
                                     ) {
@@ -66,3 +85,11 @@ if (empty($options['title'])) {
         <?= $this->Form->end() ?>
     </div>
 </div>
+
+<?php
+// enable typeahead library if foreign keys exist
+if (!empty($csvForeignKeys)) {
+    echo $this->Html->script('CsvViews.bootstrap-typeahead.min.js', ['block' => 'scriptBottom']);
+    echo $this->Html->script('CsvViews.typeahead', ['block' => 'scriptBottom']);
+}
+?>
