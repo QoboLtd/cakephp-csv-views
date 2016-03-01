@@ -50,20 +50,42 @@ if (empty($options['title'])) {
                         echo '<tr>';
                         foreach ($subFields as $field) {
                             if ('' !== trim($field)) {
-                                echo '<td class="col-xs-3 text-right"><strong>';
-                                echo Inflector::humanize($field) . ':';
-                                echo '</strong></td>';
-                                echo '<td class="col-xs-3">';
-                                // list fields
-                                if (!empty($csvListsOptions) && in_array($field, array_keys($csvListsOptions))) {
-                                    echo h($csvListsOptions[$field][$options['entity']->$field]['label']);
+                                $tableField = Inflector::humanize($field);
+                                // foreign key fields
+                                if (
+                                    !empty($csvForeignKeys) &&
+                                    in_array($field, array_keys($csvForeignKeys)) &&
+                                    ($csvForeignKeys[$field]->type() === 'manyToOne') &&
+                                    !empty($csvAssociatedRecords['manyToOne']) &&
+                                    in_array($field, array_keys($csvAssociatedRecords['manyToOne']))
+                                ) {
+                                    $tableField = Inflector::singularize(
+                                        Inflector::humanize($csvForeignKeys[$field]->table())
+                                    );
+                                    $tableValue = $this->Html->link(
+                                        h($csvAssociatedRecords['manyToOne'][$field]), [
+                                            'controller' => $csvForeignKeys[$field]->table(),
+                                            'action' => 'view',
+                                            $options['entity']->$field
+                                        ]
+                                    );
+                                } elseif (
+                                    !empty($csvListsOptions) &&
+                                    in_array($field, array_keys($csvListsOptions))
+                                ) { // list fields
+                                    $tableValue = h($csvListsOptions[$field][$options['entity']->$field]['label']);
                                 } else {
                                     if (is_bool($options['entity']->$field)) {
-                                        echo $options['entity']->$field ? __('Yes') : __('No');
+                                        $tableValue = $options['entity']->$field ? __('Yes') : __('No');
                                     } else {
-                                        echo h($options['entity']->$field);
+                                        $tableValue = h($options['entity']->$field);
                                     }
                                 }
+                                echo '<td class="col-xs-3 text-right"><strong>';
+                                echo $tableField . ':';
+                                echo '</strong></td>';
+                                echo '<td class="col-xs-3">';
+                                echo $tableValue;
                                 echo '</td>';
                             } else {
                                 echo '<td class="col-xs-3">&nbsp;</td>';
@@ -81,14 +103,14 @@ if (empty($options['title'])) {
 </div>
 
 <?php
-if (!empty($csvAssociatedRecords)) : ?>
+if (!empty($csvAssociatedRecords['oneToMany'])) : ?>
 <div class="row">
     <div class="col-xs-12">
         <h3><?= __('Associated Records'); ?></h3>
         <ul id="relatedTabs" class="nav nav-tabs" role="tablist">
 <?php
     $active = 'active';
-    foreach ($csvAssociatedRecords as $tabName => $assocData) :
+    foreach ($csvAssociatedRecords['oneToMany'] as $tabName => $assocData) :
 ?>
             <li role="presentation" class="<?= $active; ?>">
                 <a href="#<?= $tabName; ?>" aria-controls="<?= $tabName; ?>" role="tab" data-toggle="tab">
@@ -103,9 +125,9 @@ if (!empty($csvAssociatedRecords)) : ?>
         <div class="tab-content">
 <?php
     $active = 'active';
-    foreach ($csvAssociatedRecords as $tabName => $assocData) {
+    foreach ($csvAssociatedRecords['oneToMany'] as $assocName => $assocData) {
     ?>
-            <div role="tabpanel" class="tab-pane <?= $active; ?>" id="<?= $tabName; ?>">
+            <div role="tabpanel" class="tab-pane <?= $active; ?>" id="<?= $assocName; ?>">
                 <table class="table table-hover">
                     <thead>
                         <tr>
