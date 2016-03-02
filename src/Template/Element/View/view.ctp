@@ -1,7 +1,9 @@
 <?php
 use \Cake\Utility\Inflector;
 use Cake\ORM\TableRegistry;
+use \CsvViews\FieldHandlers\FieldHandlerFactory;
 
+$fhf = new FieldHandlerFactory();
 
 $defaultOptions = [
     'title' => null,
@@ -51,51 +53,17 @@ if (empty($options['title'])) {
             <table class="table table-hover">
             <?php foreach ($panelFields as $subFields) : ?>
                 <tr>
-                <?php
-                    foreach ($subFields as $field) :
-                        if ('' !== trim($field)) :
-                            $tableField = Inflector::humanize($field);
-                            // foreign key fields
-                            if (
-                                !empty($csvForeignKeys) &&
-                                in_array($field, array_keys($csvForeignKeys)) &&
-                                ($csvForeignKeys[$field]->type() === 'manyToOne') &&
-                                !empty($csvAssociatedRecords['manyToOne']) &&
-                                in_array($field, array_keys($csvAssociatedRecords['manyToOne']))
-                            ) {
-                                $tableField = Inflector::singularize(
-                                    Inflector::humanize($csvForeignKeys[$field]->table())
-                                );
-                                $tableValue = $this->Html->link(
-                                    h($csvAssociatedRecords['manyToOne'][$field]), [
-                                        'controller' => $csvForeignKeys[$field]->table(),
-                                        'action' => 'view',
-                                        $options['entity']->$field
-                                    ]
-                                );
-                            } elseif (
-                                !empty($csvListsOptions) &&
-                                in_array($field, array_keys($csvListsOptions))
-                            ) { // list fields
-                                $tableValue = h($csvListsOptions[$field][$options['entity']->$field]['label']);
-                            } else {
-                                if (is_bool($options['entity']->$field)) {
-                                    $tableValue = $options['entity']->$field ? __('Yes') : __('No');
-                                } else {
-                                    $tableValue = h($options['entity']->$field);
-                                }
-                            }
-                        ?>
+                <?php foreach ($subFields as $field) : if ('' !== trim($field)) : ?>
                     <td class="col-xs-3 text-right">
-                        <strong><?= $tableField; ?>:</strong>
+                        <strong><?= Inflector::humanize($field); ?>:</strong>
                     </td>
                     <td class="col-xs-3">
-                        <?= $tableValue; ?>
+                        <?= $fhf->renderValue($this->name, $field, $options['entity']->$field, []); ?>
                     </td>
                         <?php else : ?>
                     <td class="col-xs-3">&nbsp;</td>
                     <td class="col-xs-3">&nbsp;</td>
-                    <?php endif; endforeach; ?>
+                <?php endif; endforeach; ?>
                 </tr>
                 <?php endforeach; ?>
             </table>
