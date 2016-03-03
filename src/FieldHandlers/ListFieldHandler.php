@@ -1,6 +1,7 @@
 <?php
 namespace CsvViews\FieldHandlers;
 
+use App\View\AppView;
 use Cake\Core\Configure;
 use CsvViews\FieldHandlers\BaseFieldHandler;
 
@@ -13,6 +14,33 @@ class ListFieldHandler extends BaseFieldHandler
      * @var array
      */
     protected $_fieldParams = ['value', 'label', 'active'];
+
+    /**
+     * Input field html markup
+     */
+    const INPUT_HTML = '<div class="form-group">%s</div>';
+
+    /**
+     * Method responsible for rendering field's input.
+     * @param  mixed  $table   name or instance of the Table
+     * @param  string $field   field name
+     * @param  array  $options field options
+     * @return string          field input
+     */
+    public function renderInput($table, $field, array $options = [])
+    {
+        // load AppView
+        $cakeView = new AppView();
+
+        $listName = $this->_getListName($options['fieldDefinitions']['type']);
+        $fieldOptions = $this->_getListFieldOptions($listName);
+        $fieldOptions = $this->_filterOptions($fieldOptions);
+
+        $input = $cakeView->Form->label($field);
+        $input .= $cakeView->Form->select($field, $fieldOptions, ['class' => 'form-control']);
+
+        return sprintf(static::INPUT_HTML, $input);
+    }
 
     /**
      * Method that renders list field's value.
@@ -65,19 +93,16 @@ class ListFieldHandler extends BaseFieldHandler
     }
 
     /**
-     * Method that retrieves csv file path from specified directory.
-     * @param  string $path directory to search in
-     * @return string       csv file path
+     * Method that filters list options, excluding non-active ones
+     * @param  array $options list options
+     * @return array
      */
-    protected function _getCsvFile($path)
+    protected function _filterOptions($options)
     {
-        $result = '';
-        if (file_exists($path)) {
-            foreach (new \DirectoryIterator($path) as $fileInfo) {
-                if ($fileInfo->isFile() && 'csv' === $fileInfo->getExtension()) {
-                    $result = $fileInfo->getPathname();
-                    break;
-                }
+        $result = [];
+        foreach ($options as $k => $v) {
+            if ($v['active']) {
+                $result[$k] = $v['label'];
             }
         }
 
