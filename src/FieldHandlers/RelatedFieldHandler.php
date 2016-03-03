@@ -22,7 +22,6 @@ class RelatedFieldHandler extends BaseFieldHandler
      */
     public function renderValue($table, $field, $data, array $options = [])
     {
-        $result = parent::renderValue($table, $field, $data, $options);
         // load html helper
         $cakeView = new View();
         $cakeView->loadHelper('Html');
@@ -31,7 +30,7 @@ class RelatedFieldHandler extends BaseFieldHandler
         // get related table's displayField value
         $displayFieldValue = $this->_getDisplayFieldValueByPrimaryKey(Inflector::camelize($relatedName), $data);
         // generate related record html link
-        $result .= $cakeView->Html->link(
+        $result = $cakeView->Html->link(
             h($displayFieldValue),
             ['controller' => $relatedName, 'action' => static::LINK_ACTION, $data]
         );

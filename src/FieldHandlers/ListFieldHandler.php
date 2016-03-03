@@ -24,14 +24,12 @@ class ListFieldHandler extends BaseFieldHandler
      */
     public function renderValue($table, $field, $data, array $options = [])
     {
-        $result = parent::renderValue($table, $field, $data, $options);
+        $result = $data;
         $listName = $this->_getListName($options['fieldDefinitions']['type']);
         $fieldOptions = $this->_getListFieldOptions($listName);
 
         if (!empty($fieldOptions[$data]['label'])) {
-            $result .= h($fieldOptions[$data]['label']);
-        } else {
-            $result .= $data;
+            $result = h($fieldOptions[$data]['label']);
         }
 
         return $result;

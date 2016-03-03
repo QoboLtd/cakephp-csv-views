@@ -15,8 +15,7 @@ class BooleanFieldHandler extends BaseFieldHandler
      */
     public function renderValue($table, $field, $data, array $options = [])
     {
-        $result = parent::renderValue($table, $field, $data, $options);
-        $result .= $data ? __('Yes') : __('No');
+        $result = $data ? __('Yes') : __('No');
 
         return $result;
     }
