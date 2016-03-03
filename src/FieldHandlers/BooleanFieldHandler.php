@@ -13,7 +13,7 @@ class BooleanFieldHandler extends BaseFieldHandler
      * @param  array  $options field options
      * @return string
      */
-    public function renderValue($table, $field, $data, array $options)
+    public function renderValue($table, $field, $data, array $options = [])
     {
         $result = parent::renderValue($table, $field, $data, $options);
         $result .= $data ? __('Yes') : __('No');

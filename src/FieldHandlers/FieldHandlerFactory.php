@@ -29,7 +29,7 @@ class FieldHandlerFactory
      * @param  array  $options field options
      * @return string          list field value
      */
-    public function renderValue($table, $field, $data, array $options)
+    public function renderValue($table, $field, $data, array $options = [])
     {
         // set table name
         if (is_object($table)) {

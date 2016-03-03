@@ -11,5 +11,5 @@ interface FieldHandlerInterface
      * @param  array  $options field options
      * @return string          field value
      */
-    public function renderValue($table, $field, $data, array $options);
+    public function renderValue($table, $field, $data, array $options = []);
 }
