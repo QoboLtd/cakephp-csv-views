@@ -50,13 +50,11 @@ class FieldHandlerFactory
         // get appropriate field handler
         $handlerName = $this->_getHandlerByFieldType($fieldDefinitions['type'], true);
 
-        if (!class_exists($handlerName)) {
-            $handlerName = __NAMESPACE__ . '\\' . static::DEFAULT_HANDLER_CLASS . static::HANDLER_SUFFIX;
-        }
-
         $interface = __NAMESPACE__ . '\\' . static::FIELD_HANDLER_INTERFACE;
-        if (!in_array($interface, class_implements($handlerName))) {
-            throw new \RuntimeException($handlerName . ' does not implement ' . $interface);
+        if (class_exists($handlerName) && in_array($interface, class_implements($handlerName))) {
+            //
+        } else { // switch to default field handler
+            $handlerName = __NAMESPACE__ . '\\' . static::DEFAULT_HANDLER_CLASS . static::HANDLER_SUFFIX;
         }
 
         $handler = new $handlerName;
