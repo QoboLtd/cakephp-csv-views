@@ -17,8 +17,20 @@ class FieldHandlerFactory
 
     protected $_tableInstances = [];
 
-    public function renderInput($model, $field, $options)
+    /**
+     * Method responsible for rendering field's input.
+     * @param  mixed  $table   name or instance of the Table
+     * @param  string $field   field name
+     * @param  array  $options field options
+     * @return string          field input
+     */
+    public function renderInput($table, $field, array $options = [])
     {
+        $table = $this->_getTableInstance($table);
+        $options = $this->_getExtraOptions($table, $field, $options);
+        $handler = $this->_getHandler($options['fieldDefinitions']['type']);
+
+        return $handler->renderInput($table, $field, $options);
     }
 
     /**
@@ -31,6 +43,20 @@ class FieldHandlerFactory
      */
     public function renderValue($table, $field, $data, array $options = [])
     {
+        $table = $this->_getTableInstance($table);
+        $options = $this->_getExtraOptions($table, $field, $options);
+        $handler = $this->_getHandler($options['fieldDefinitions']['type']);
+
+        return $handler->renderValue($table, $field, $data, $options);
+    }
+
+    /**
+     * Method that sets and returns Table instance
+     * @param  mixed  $table name or instance of the Table
+     * @return object        Table instance
+     */
+    protected function _getTableInstance($table)
+    {
         // set table name
         if (is_object($table)) {
             $this->setTableName($table->alias());
@@ -40,6 +66,18 @@ class FieldHandlerFactory
 
         $tableInstance = $this->_setTableInstance($table);
 
+        return $tableInstance;
+    }
+
+    /**
+     * Method that adds extra parameters to the field options array.
+     * @param  object $tableInstance instance of the Table
+     * @param  string $field         field name
+     * @param  array  $options       field options
+     * @return array
+     */
+    protected function _getExtraOptions($tableInstance, $field, array $options = [])
+    {
         // get fields definitions
         $fieldsDefinitions = $tableInstance->getFieldsDefinitions();
         $fieldDefinitions = $fieldsDefinitions[$field];
@@ -47,8 +85,19 @@ class FieldHandlerFactory
         // add field definitions to options array
         $options['fieldDefinitions'] = $fieldDefinitions;
 
+        return $options;
+    }
+
+    /**
+     * Method that returns an instance of the appropriate
+     * FieldHandler class based on field Type.
+     * @param  array  $fieldType field type
+     * @return object            FieldHandler instance
+     */
+    protected function _getHandler($fieldType)
+    {
         // get appropriate field handler
-        $handlerName = $this->_getHandlerByFieldType($fieldDefinitions['type'], true);
+        $handlerName = $this->_getHandlerByFieldType($fieldType, true);
 
         $interface = __NAMESPACE__ . '\\' . static::FIELD_HANDLER_INTERFACE;
         if (class_exists($handlerName) && in_array($interface, class_implements($handlerName))) {
@@ -57,9 +106,7 @@ class FieldHandlerFactory
             $handlerName = __NAMESPACE__ . '\\' . static::DEFAULT_HANDLER_CLASS . static::HANDLER_SUFFIX;
         }
 
-        $handler = new $handlerName;
-
-        return $handler->renderValue($table, $field, $data, $options);
+        return new $handlerName;
     }
 
     /**
