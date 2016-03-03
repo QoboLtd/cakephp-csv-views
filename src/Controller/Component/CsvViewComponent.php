@@ -4,6 +4,7 @@ namespace CsvViews\Controller\Component;
 use Cake\Controller\Component;
 use Cake\Controller\ComponentRegistry;
 use Cake\Core\Configure;
+use Cake\Datasource\ConnectionManager;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 
@@ -19,6 +20,14 @@ class CsvViewComponent extends Component
      * @var array
      */
     protected $_defaultConfig = [];
+
+    const ASSOC_FIELDS_ACTION = 'index';
+
+    /**
+     * Actions to pass associated records to
+     * @var array
+     */
+    protected $_assocActions = ['view'];
 
     /**
      * Count of fields per row for panel logic
@@ -48,8 +57,18 @@ class CsvViewComponent extends Component
      */
     public function beforeFilter(\Cake\Event\Event $event)
     {
-        if ('view' === $this->request->params['action']) {
-            $this->_setAssociatedRecords($event, ['oneToMany']);
+        if (in_array($this->request->params['action'], $this->_assocActions)) {
+            $controller = $event->subject();
+            // associated records
+            $controller->set(
+                'csvAssociatedRecords',
+                $this->_setAssociatedRecords(
+                    $event,
+                    ['oneToMany', 'manyToOne'],
+                    TableRegistry::get($controller->name)
+                )
+            );
+            $controller->set('_serialize', ['csvAssociatedRecords']);
         }
 
         $path = Configure::readOrFail('CsvViews.path');
@@ -60,51 +79,127 @@ class CsvViewComponent extends Component
      * Method that retrieves specified Table's associated records and passes them to the View.
      * @param \Cake\Event\Event $event     An Event instance
      * @param array             $types     association type(s)
-     * @param string            $tableName Table name to fetch associated records from
-     * @return void
+     * @param \Cake\ORM\Table   $table     Table object
+     * @return array                       associated records
      */
-    protected function _setAssociatedRecords(\Cake\Event\Event $event, array $types, $tableName = '')
+    protected function _setAssociatedRecords(\Cake\Event\Event $event, array $types, \Cake\ORM\Table $table = null)
     {
-        $controller = $event->subject();
-        // if not provided, get Table name from current controller
-        if ('' === trim($tableName)) {
-            $tableName = $controller->name;
+        // if not provided, get Table object from current controller
+        if (is_null($table)) {
+            $table = TableRegistry::get($event->subject()->name);
         }
 
         $result = [];
-        $table = TableRegistry::get($tableName);
+        // loop through associations
         foreach ($table->associations() as $association) {
-            if (in_array($association->type(), $types)) {
-                $assocName = $association->name();
-                $tableName = $association->table();
-                $foreignKey = $association->foreignKey();
-                $recordId = $this->request->params['pass'][0];
-
-                // get associated index View csv fields
-                $action = 'index';
-                $path = Configure::readOrFail('CsvViews.path');
-                $path .= Inflector::camelize($tableName) . DS . $action . '.csv';
-                $fields = $this->_getFieldsFromCsv($path, $action);
-                $fields = array_map(function ($v) {
-                    return $v[0];
-                }, $fields);
-
+            $assocType = $association->type();
+            if (in_array($assocType, $types)) {
                 // get associated records
-                $query = $table->{$assocName}->find('all', [
-                    'conditions' => [$foreignKey => $recordId],
-                    'fields' => $fields
-                ]);
-                $result[$assocName]['records'] = $query->all();
+                switch ($association->type()) {
+                    case 'manyToOne':
+                        $result[$assocType][$association->foreignKey()] = $this->_manyToOneAssociatedRecords(
+                            $table,
+                            $association
+                        );
+                        break;
 
-                $result[$assocName]['fields'] = $fields;
-
-                // get associated table name
-                $result[$assocName]['table_name'] = $tableName;
+                    case 'oneToMany':
+                        $result[$assocType][$association->name()] = $this->_oneToManyAssociatedRecords(
+                            $table,
+                            $association
+                        );
+                        break;
+                }
             }
         }
 
-        $controller->set('csvAssociatedRecords', $result);
-        $controller->set('_serialize', ['csvAssociatedRecords']);
+        return $result;
+    }
+
+    /**
+     * Method that retrieves many to one associated records
+     * @param  \Cake\ORM\Table       $table       Table object
+     * @param  \Cake\ORM\Association $association Association object
+     * @return array                              associated records
+     */
+    protected function _manyToOneAssociatedRecords(\Cake\ORM\Table $table, \Cake\ORM\Association $association)
+    {
+        $tableName = $table->table();
+        $primaryKey = $table->primaryKey();
+        $assocTableName = $association->table();
+        $assocPrimaryKey = $association->primaryKey();
+        $assocForeignKey = $association->foreignKey();
+        $recordId = $this->request->params['pass'][0];
+        $displayField = $association->displayField();
+
+        $connection = ConnectionManager::get('default');
+        $records = $connection
+            ->execute(
+                'SELECT ' . $assocTableName . '.' . $displayField . ' FROM ' . $tableName . ' LEFT JOIN ' . $assocTableName . ' ON ' . $tableName . '.' . $assocForeignKey . ' = ' . $assocTableName . '.' . $assocPrimaryKey . ' WHERE ' . $tableName . '.' . $primaryKey . ' = :id LIMIT 1',
+                ['id' => $recordId]
+            )
+            ->fetchAll('assoc');
+
+        // store associated table records
+        $result = $records[0][$displayField];
+
+        return $result;
+    }
+
+    /**
+     * Method that retrieves one to many associated records
+     * @param  \Cake\ORM\Table       $table       Table object
+     * @param  \Cake\ORM\Association $association Association object
+     * @return array                              associated records
+     */
+    protected function _oneToManyAssociatedRecords(\Cake\ORM\Table $table, \Cake\ORM\Association $association)
+    {
+        $assocName = $association->name();
+        $assocTableName = $association->table();
+        $assocForeignKey = $association->foreignKey();
+        $recordId = $this->request->params['pass'][0];
+
+        // get associated index View csv fields
+        $fields = $this->_getTableFields($association);
+
+        $query = $table->{$assocName}->find('all', [
+            'conditions' => [$assocForeignKey => $recordId],
+            'fields' => $fields
+        ]);
+        $records = $query->all();
+        // store associated table records
+        $result['records'] = $records;
+        // store associated table fields
+        $result['fields'] = $fields;
+        // store associated table name
+        $result['table_name'] = $assocTableName;
+
+        return $result;
+    }
+
+    /**
+     * Method that retrieves table fields defined
+     * in the csv file, based on specified action
+     * @param  object $table  Table object
+     * @param  string $action action name
+     * @return array          table fields
+     */
+    protected function _getTableFields($table, $action = '')
+    {
+        $tableName = $table->table();
+        if ('' === trim($action)) {
+            $action = static::ASSOC_FIELDS_ACTION;
+        }
+
+        $path = Configure::readOrFail('CsvViews.path');
+        $path .= Inflector::camelize($tableName) . DS . $action . '.csv';
+
+        $result = $this->_getFieldsFromCsv($path, $action);
+        $result = array_map(function ($v) {
+            return $v[0];
+        }, $result);
+
+        return $result;
     }
 
     /**
