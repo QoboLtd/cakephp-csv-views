@@ -11,7 +11,7 @@ class FieldHandlerFactory
 
     const HANDLER_SUFFIX = 'FieldHandler';
 
-    const IMPLEMENTED_INTERFACE = 'FieldHandlerInterface';
+    const FIELD_HANDLER_INTERFACE = 'FieldHandlerInterface';
 
     protected $_tableName;
 
@@ -54,7 +54,7 @@ class FieldHandlerFactory
             $handlerName = __NAMESPACE__ . '\\' . static::DEFAULT_HANDLER_CLASS . static::HANDLER_SUFFIX;
         }
 
-        $interface = __NAMESPACE__ . '\\' . static::IMPLEMENTED_INTERFACE;
+        $interface = __NAMESPACE__ . '\\' . static::FIELD_HANDLER_INTERFACE;
         if (!in_array($interface, class_implements($handlerName))) {
             throw new \RuntimeException($handlerName . ' does not implement ' . $interface);
         }
