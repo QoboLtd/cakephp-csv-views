@@ -7,14 +7,31 @@ use CsvMigrations\ForeignKeysHandler;
 
 class FieldHandlerFactory
 {
+    /**
+     * Default Field Handler class name
+     */
     const DEFAULT_HANDLER_CLASS = 'Default';
 
+    /**
+     * Field Handler classes suffix
+     */
     const HANDLER_SUFFIX = 'FieldHandler';
 
+    /**
+     * Field Handler Interface class name
+     */
     const FIELD_HANDLER_INTERFACE = 'FieldHandlerInterface';
 
+    /**
+     * Current Table name
+     * @var string
+     */
     protected $_tableName;
 
+    /**
+     * Loaded Table instances
+     * @var array
+     */
     protected $_tableInstances = [];
 
     /**
