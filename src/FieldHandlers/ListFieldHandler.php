@@ -108,6 +108,7 @@ class ListFieldHandler extends BaseFieldHandler
      * Method that restructures list options csv data for better handling.
      * @param  array  $data csv data
      * @return array
+     * @todo   Validation of CVS files should probably be done separately, elsewhere.
      */
     protected function _prepareListOptions($data)
     {
