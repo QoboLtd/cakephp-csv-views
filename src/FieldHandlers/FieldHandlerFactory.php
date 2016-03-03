@@ -76,6 +76,9 @@ class FieldHandlerFactory
 
     /**
      * Method that retrieves handler class name based on provided field type.
+     * It also handles more advanced field types like foreign key and list fields.
+     * Example: if field type is 'string' then 'StringFieldHandler' will be returned.
+     * Example: if field type is 'related:users' then 'RelatedFieldHandler' will be returned.
      * @param  string $type field type
      * @param  bool   $fqcn true to use fully-qualified class name
      * @return string       handler class name
