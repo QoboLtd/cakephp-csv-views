@@ -16,7 +16,7 @@ class ListFieldHandler extends BaseFieldHandler
      * Field parameters
      * @var array
      */
-    protected $_fieldParams = ['value', 'label', 'active'];
+    protected $_fieldParams = ['value', 'label', 'inactive'];
 
     /**
      * Input field html markup
@@ -104,9 +104,10 @@ class ListFieldHandler extends BaseFieldHandler
     {
         $result = [];
         foreach ($options as $k => $v) {
-            if ($v['active']) {
-                $result[$k] = $v['label'];
+            if ($v['inactive']) {
+                continue;
             }
+            $result[$k] = $v['label'];
         }
 
         return $result;
@@ -153,7 +154,7 @@ class ListFieldHandler extends BaseFieldHandler
 
             $result[$field['value']] = [
                 'label' => $field['label'],
-                'active' => (bool)$field['active']
+                'inactive' => (bool)$field['inactive']
             ];
         }
 
