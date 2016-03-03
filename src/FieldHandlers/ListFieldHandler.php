@@ -7,6 +7,9 @@ use CsvViews\FieldHandlers\BaseFieldHandler;
 
 class ListFieldHandler extends BaseFieldHandler
 {
+    /**
+     * Field type match pattern
+     */
     const FIELD_TYPE_PATTERN = 'list:';
 
     /**

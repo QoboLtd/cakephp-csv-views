@@ -8,6 +8,9 @@ use CsvViews\FieldHandlers\BaseFieldHandler;
 
 class RelatedFieldHandler extends BaseFieldHandler
 {
+    /**
+     * Field type match pattern
+     */
     const FIELD_TYPE_PATTERN = 'related:';
 
     /**
