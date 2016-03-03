@@ -109,6 +109,7 @@ class ListFieldHandler extends BaseFieldHandler
      * @param  array  $data csv data
      * @return array
      * @todo   Validation of CVS files should probably be done separately, elsewhere.
+     *         Note: the number of columns can vary per record.
      */
     protected function _prepareListOptions($data)
     {
