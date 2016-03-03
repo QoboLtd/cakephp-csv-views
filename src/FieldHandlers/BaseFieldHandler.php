@@ -4,7 +4,7 @@ namespace CsvViews\FieldHandlers;
 use App\View\AppView;
 use CsvViews\FieldHandlers\FieldHandlerInterface;
 
-class BaseFieldHandler implements FieldHandlerInterface
+abstract class BaseFieldHandler implements FieldHandlerInterface
 {
     /**
      * Csv field types respective input field types
