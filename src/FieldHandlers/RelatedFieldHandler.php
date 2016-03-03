@@ -1,9 +1,9 @@
 <?php
 namespace CsvViews\FieldHandlers;
 
+use App\View\AppView;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
-use Cake\View\View;
 use CsvViews\FieldHandlers\BaseFieldHandler;
 
 class RelatedFieldHandler extends BaseFieldHandler
@@ -22,9 +22,8 @@ class RelatedFieldHandler extends BaseFieldHandler
      */
     public function renderValue($table, $field, $data, array $options = [])
     {
-        // load html helper
-        $cakeView = new View();
-        $cakeView->loadHelper('Html');
+        // load AppView
+        $cakeView = new AppView();
         // get related table name
         $relatedName = $this->_getRelatedName($options['fieldDefinitions']['type']);
         // get related table's displayField value
