@@ -10,7 +10,38 @@ class RelatedFieldHandler extends BaseFieldHandler
 {
     const FIELD_TYPE_PATTERN = 'related:';
 
+    /**
+     * Action name for html link
+     */
     const LINK_ACTION = 'view';
+
+    /**
+     * Method responsible for rendering field's input.
+     * @param  mixed  $table   name or instance of the Table
+     * @param  string $field   field name
+     * @param  array  $options field options
+     * @return string          field input
+     */
+    public function renderInput($table, $field, array $options = [])
+    {
+        // load AppView
+        $cakeView = new AppView();
+
+        $relatedName = $this->_getRelatedName($options['fieldDefinitions']['type']);
+
+        $input = $cakeView->Form->input($field, [
+            'name' => $field . '_label',
+            'id' => $field . '_label',
+            'type' => 'text',
+            'data-type' => 'typeahead',
+            'data-name' => $field,
+            'autocomplete' => 'off',
+            'data-url' => '/' . $relatedName . '/autocomplete.json'
+        ]);
+        $input .= $cakeView->Form->input($field, ['type' => 'hidden']);
+
+        return $input;
+    }
 
     /**
      * Method that renders related field's value.
