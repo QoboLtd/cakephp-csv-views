@@ -15,7 +15,7 @@ class BaseFieldHandler implements FieldHandlerInterface
      */
     public function renderValue($table, $field, $data, array $options = [])
     {
-        $result = '';
+        $result = $data;
 
         return $result;
     }
