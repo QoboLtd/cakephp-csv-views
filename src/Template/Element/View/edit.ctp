@@ -61,9 +61,8 @@ if (empty($options['title'])) {
 </div>
 
 <?php
-// enable typeahead library if foreign keys exist
-if (!empty($csvForeignKeys)) {
-    echo $this->Html->script('CsvViews.bootstrap-typeahead.min.js', ['block' => 'scriptBottom']);
-    echo $this->Html->script('CsvViews.typeahead', ['block' => 'scriptBottom']);
-}
+// enable typeahead library
+// @todo load these files only if foreign/related field exists
+echo $this->Html->script('CsvViews.bootstrap-typeahead.min.js', ['block' => 'scriptBottom']);
+echo $this->Html->script('CsvViews.typeahead', ['block' => 'scriptBottom']);
 ?>
