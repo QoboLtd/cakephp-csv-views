@@ -39,7 +39,7 @@ class RelatedFieldHandler extends BaseFieldHandler
             'data-type' => 'typeahead',
             'data-name' => $field,
             'autocomplete' => 'off',
-            'data-url' => '/' . $relatedName . '/autocomplete.json'
+            'data-url' => '/api/' . $relatedName . '/lookup.json'
         ]);
         $input .= $cakeView->Form->input($field, ['type' => 'hidden']);
 
