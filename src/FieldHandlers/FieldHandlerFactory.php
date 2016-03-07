@@ -38,16 +38,17 @@ class FieldHandlerFactory
      * Method responsible for rendering field's input.
      * @param  mixed  $table   name or instance of the Table
      * @param  string $field   field name
+     * @param  string $data    field data
      * @param  array  $options field options
      * @return string          field input
      */
-    public function renderInput($table, $field, array $options = [])
+    public function renderInput($table, $field, $data, array $options = [])
     {
         $table = $this->_getTableInstance($table);
         $options = $this->_getExtraOptions($table, $field, $options);
         $handler = $this->_getHandler($options['fieldDefinitions']['type']);
 
-        return $handler->renderInput($table, $field, $options);
+        return $handler->renderInput($table, $field, $data, $options);
     }
 
     /**

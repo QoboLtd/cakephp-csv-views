@@ -22,26 +22,31 @@ class RelatedFieldHandler extends BaseFieldHandler
      * Method responsible for rendering field's input.
      * @param  mixed  $table   name or instance of the Table
      * @param  string $field   field name
+     * @param  string $data    field data
      * @param  array  $options field options
      * @return string          field input
      */
-    public function renderInput($table, $field, array $options = [])
+    public function renderInput($table, $field, $data, array $options = [])
     {
         // load AppView
         $cakeView = new AppView();
 
         $relatedName = $this->_getRelatedName($options['fieldDefinitions']['type']);
+        // get related table's displayField value
+        $displayFieldValue = $this->_getDisplayFieldValueByPrimaryKey(Inflector::camelize($relatedName), $data);
 
         $input = $cakeView->Form->input($field, [
             'name' => $field . '_label',
             'id' => $field . '_label',
             'type' => 'text',
             'data-type' => 'typeahead',
+            'readonly' => (bool)$data,
+            'value' => $displayFieldValue,
             'data-name' => $field,
             'autocomplete' => 'off',
             'data-url' => '/api/' . $relatedName . '/lookup.json'
         ]);
-        $input .= $cakeView->Form->input($field, ['type' => 'hidden']);
+        $input .= $cakeView->Form->input($field, ['type' => 'hidden', 'value' => $data]);
 
         return $input;
     }
@@ -92,6 +97,8 @@ class RelatedFieldHandler extends BaseFieldHandler
      */
     protected function _getDisplayFieldValueByPrimaryKey($table, $value)
     {
+        $result = '';
+
         if (!is_object($table)) {
             $table = TableRegistry::get($table);
         }
@@ -104,8 +111,12 @@ class RelatedFieldHandler extends BaseFieldHandler
             'limit' => 1
         ]);
 
-        $result = $query->first();
+        $record = $query->first();
 
-        return $result->$displayField;
+        if (!is_null($record)) {
+            $result = $record->$displayField;
+        }
+
+        return $result;
     }
 }
