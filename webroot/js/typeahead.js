@@ -67,8 +67,15 @@ var typeahead = typeahead || {};
                         // Hide the list, there was some error
                         return false;
                     }
-                    // We good!
-                    return data.records;
+                    result = [];
+                    $.each(data.data, function(k, v) {
+                        result.push({
+                            id: k,
+                            name: v
+                        });
+                    });
+
+                    return result;
                 }
             },
             onSelect: function(data) {

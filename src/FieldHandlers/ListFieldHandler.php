@@ -27,10 +27,11 @@ class ListFieldHandler extends BaseFieldHandler
      * Method responsible for rendering field's input.
      * @param  mixed  $table   name or instance of the Table
      * @param  string $field   field name
+     * @param  string $data    field data
      * @param  array  $options field options
      * @return string          field input
      */
-    public function renderInput($table, $field, array $options = [])
+    public function renderInput($table, $field, $data, array $options = [])
     {
         // load AppView
         $cakeView = new AppView();
@@ -40,7 +41,10 @@ class ListFieldHandler extends BaseFieldHandler
         $fieldOptions = $this->_filterOptions($fieldOptions);
 
         $input = $cakeView->Form->label($field);
-        $input .= $cakeView->Form->select($field, $fieldOptions, ['class' => 'form-control']);
+        $input .= $cakeView->Form->select($field, $fieldOptions, [
+            'class' => 'form-control',
+            'value' => $data
+        ]);
 
         return sprintf(static::INPUT_HTML, $input);
     }
