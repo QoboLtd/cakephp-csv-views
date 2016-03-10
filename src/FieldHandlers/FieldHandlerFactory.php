@@ -42,7 +42,7 @@ class FieldHandlerFactory
      * @param  array  $options field options
      * @return string          field input
      */
-    public function renderInput($table, $field, $data, array $options = [])
+    public function renderInput($table, $field, $data = '', array $options = [])
     {
         $table = $this->_getTableInstance($table);
         $options = $this->_getExtraOptions($table, $field, $options);
