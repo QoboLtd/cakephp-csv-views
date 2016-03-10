@@ -14,7 +14,7 @@ class BooleanFieldHandler extends BaseFieldHandler
      * @param  array  $options field options
      * @return string          field input
      */
-    public function renderInput($table, $field, $data, array $options = [])
+    public function renderInput($table, $field, $data = '', array $options = [])
     {
         // load AppView
         $cakeView = new AppView();
