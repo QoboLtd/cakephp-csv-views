@@ -6,6 +6,8 @@ use CsvViews\FieldHandlers\BaseFieldHandler;
 
 class BooleanFieldHandler extends BaseFieldHandler
 {
+    const FIELD_TYPE = 'checkbox';
+
     /**
      * Method responsible for rendering field's input.
      * @param  mixed  $table   name or instance of the Table
@@ -19,14 +21,8 @@ class BooleanFieldHandler extends BaseFieldHandler
         // load AppView
         $cakeView = new AppView();
 
-        $fieldType = $options['fieldDefinitions']['type'];
-
-        if (in_array($fieldType, array_keys($this->_fieldTypes))) {
-            $fieldType = $this->_fieldTypes[$fieldType];
-        }
-
         return $cakeView->Form->input($field, [
-            'type' => $fieldType,
+            'type' => static::FIELD_TYPE,
             'checked' => $data
         ]);
     }
